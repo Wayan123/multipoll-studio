@@ -1,0 +1,139 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "jxbs-3001-npk",
+  "name": "JXBS-3001-NPK-RS",
+  "vendor": "JXCT",
+  "category": "Soil",
+  "status": "partial",
+  "notes": "Soil 7-in-1. Defaults 9600 8N1, address 1. The manual says the sensor only uses FC03, so address and baud writes may be refused; restart the sensor after a change.",
+  "sources": [
+    {
+      "title": "JXCT JXBS-3001-NPK-RS user manual V2.0",
+      "url": "https://hacksterio.s3.amazonaws.com/uploads/attachments/1637571/user_manual_ver_2_0_rs485-soil_7in1_soil_sensor_(2)_EDJzkxEx1s.pdf",
+      "status": "third-party"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Soil",
+      "function": 3,
+      "address": 6,
+      "quantity": 27,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "pH",
+          "scale": 0.01,
+          "decimals": 2
+        },
+        {
+          "offset": 12,
+          "name": "Soil moisture",
+          "scale": 0.1,
+          "unit": "%",
+          "decimals": 1
+        },
+        {
+          "offset": 13,
+          "name": "Soil temperature",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "°C",
+          "decimals": 1
+        },
+        {
+          "offset": 15,
+          "name": "Conductivity",
+          "unit": "µS/cm"
+        },
+        {
+          "offset": 24,
+          "name": "Nitrogen",
+          "unit": "mg/kg"
+        },
+        {
+          "offset": 25,
+          "name": "Phosphorus",
+          "unit": "mg/kg"
+        },
+        {
+          "offset": 26,
+          "name": "Potassium",
+          "unit": "mg/kg"
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "function": 3,
+      "address": 256,
+      "quantity": 2,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Device address"
+        },
+        {
+          "offset": 1,
+          "name": "Baud rate"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Device address",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 256,
+      "encoding": "u16",
+      "min": 1,
+      "max": 255,
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The manual does not document the write function code; FC06 is assumed. The manual says only FC03 is used, so the write may be refused."
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 257,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 2400,
+          "label": "2400",
+          "baud": 2400
+        },
+        {
+          "value": 4800,
+          "label": "4800",
+          "baud": 4800
+        },
+        {
+          "value": 9600,
+          "label": "9600",
+          "baud": 9600
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The manual does not document the write function code; FC06 is assumed. Whether the register holds the bps value or a code is not stated; the bps value is assumed. The manual says only FC03 is used, so the write may be refused."
+    }
+  ]
+}

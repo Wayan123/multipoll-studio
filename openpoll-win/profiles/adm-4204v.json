@@ -1,0 +1,411 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "adm-4204v",
+  "name": "ADM-4204V",
+  "vendor": "Volison",
+  "category": "I/O module",
+  "status": "observed",
+  "notes": "4-channel analog voltage output; raw 0-10000 is full scale of the selected AO type. Defaults 9600 8N1, ID 1, and the module saves and restarts after any setting write. If the settings are lost, wire INIT to GND before power-up to start with the defaults.",
+  "sources": [
+    {
+      "title": "ADM-4204C/ADM-4204V User's Manual (Volison)",
+      "url": "ADM-4204CV User's Manual.pdf",
+      "status": "observed"
+    },
+    {
+      "title": "Volison",
+      "url": "http://www.volison.com",
+      "status": "observed"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "identify": {
+    "function": 3,
+    "register": 159,
+    "values": [
+      {
+        "value": 32784,
+        "label": "ADM-4204C"
+      },
+      {
+        "value": 33040,
+        "label": "ADM-4204V"
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "name": "Analog outputs",
+      "function": 3,
+      "address": 0,
+      "quantity": 4,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "AO0",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 1,
+          "name": "AO1",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 2,
+          "name": "AO2",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 3,
+          "name": "AO3",
+          "write_min": 0,
+          "write_max": 10000
+        }
+      ]
+    },
+    {
+      "name": "Channel AO type",
+      "function": 3,
+      "address": 32,
+      "quantity": 4,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "AO0 type"
+        },
+        {
+          "offset": 1,
+          "name": "AO1 type"
+        },
+        {
+          "offset": 2,
+          "name": "AO2 type"
+        },
+        {
+          "offset": 3,
+          "name": "AO3 type"
+        }
+      ]
+    },
+    {
+      "name": "Initial values",
+      "function": 3,
+      "address": 36,
+      "quantity": 4,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "AO0",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 1,
+          "name": "AO1",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 2,
+          "name": "AO2",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 3,
+          "name": "AO3",
+          "write_min": 0,
+          "write_max": 10000
+        }
+      ]
+    },
+    {
+      "name": "Safety values",
+      "function": 3,
+      "address": 40,
+      "quantity": 4,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "AO0",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 1,
+          "name": "AO1",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 2,
+          "name": "AO2",
+          "write_min": 0,
+          "write_max": 10000
+        },
+        {
+          "offset": 3,
+          "name": "AO3",
+          "write_min": 0,
+          "write_max": 10000
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "function": 3,
+      "address": 159,
+      "quantity": 8,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Model code",
+          "format": "hex16"
+        },
+        {
+          "offset": 1,
+          "name": "Slave ID"
+        },
+        {
+          "offset": 2,
+          "name": "Baud code"
+        },
+        {
+          "offset": 3,
+          "name": "Parity code"
+        },
+        {
+          "offset": 4,
+          "name": "AO type (all)"
+        },
+        {
+          "offset": 5,
+          "name": "Power-up output"
+        },
+        {
+          "offset": 6,
+          "name": "Watchdog enable"
+        },
+        {
+          "offset": 7,
+          "name": "Watchdog timer",
+          "scale": 0.1,
+          "unit": "s",
+          "decimals": 1
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Slave ID",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 160,
+      "encoding": "u16",
+      "min": 1,
+      "max": 254,
+      "apply": "auto_restart",
+      "verified": true
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 161,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 0,
+          "label": "1200",
+          "baud": 1200
+        },
+        {
+          "value": 1,
+          "label": "2400",
+          "baud": 2400
+        },
+        {
+          "value": 2,
+          "label": "4800",
+          "baud": 4800
+        },
+        {
+          "value": 3,
+          "label": "9600",
+          "baud": 9600
+        },
+        {
+          "value": 4,
+          "label": "19200",
+          "baud": 19200
+        },
+        {
+          "value": 5,
+          "label": "38400",
+          "baud": 38400
+        },
+        {
+          "value": 6,
+          "label": "57600",
+          "baud": 57600
+        },
+        {
+          "value": 7,
+          "label": "115200",
+          "baud": 115200
+        }
+      ],
+      "apply": "auto_restart",
+      "verified": true
+    },
+    {
+      "key": "parity",
+      "name": "Parity",
+      "role": "parity",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 162,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 0,
+          "label": "None",
+          "parity": "N"
+        },
+        {
+          "value": 1,
+          "label": "Odd",
+          "parity": "O"
+        },
+        {
+          "value": 2,
+          "label": "Even",
+          "parity": "E"
+        }
+      ],
+      "apply": "auto_restart",
+      "verified": true
+    },
+    {
+      "key": "ao_type",
+      "name": "AO type (all channels)",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 163,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 0,
+          "label": "0-10 V"
+        },
+        {
+          "value": 1,
+          "label": "0-5 V"
+        },
+        {
+          "value": 2,
+          "label": "Custom (per channel)"
+        }
+      ],
+      "apply": "auto_restart",
+      "verified": true
+    },
+    {
+      "key": "power_up_output",
+      "name": "Power-up output",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 164,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 0,
+          "label": "Last value before power-off"
+        },
+        {
+          "value": 1,
+          "label": "Initial value"
+        }
+      ],
+      "apply": "auto_restart",
+      "verified": true
+    },
+    {
+      "key": "watchdog",
+      "name": "Communication watchdog",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 165,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 0,
+          "label": "Disabled"
+        },
+        {
+          "value": 1,
+          "label": "Enabled"
+        }
+      ],
+      "apply": "auto_restart",
+      "verified": true
+    },
+    {
+      "key": "watchdog_timer",
+      "name": "Watchdog timer (0.1 s)",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 166,
+      "encoding": "u16",
+      "min": 0,
+      "max": 65535,
+      "apply": "auto_restart",
+      "verified": true
+    }
+  ],
+  "actions": [
+    {
+      "key": "factory_reset",
+      "name": "Restore factory settings",
+      "confirm": "Restore factory settings? The module goes back to 9600 8N1, ID 1.",
+      "steps": [
+        {
+          "function": 6,
+          "register": 167,
+          "value": 43605
+        },
+        {
+          "function": 6,
+          "register": 167,
+          "value": 21930
+        }
+      ],
+      "verified": true
+    }
+  ]
+}

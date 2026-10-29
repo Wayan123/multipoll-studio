@@ -1,0 +1,448 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "sdm120-m",
+  "name": "SDM120-M (2025+)",
+  "vendor": "Eastron",
+  "category": "Energy",
+  "status": "partial",
+  "notes": "New-generation SDM120-M: defaults 9600 8N1, ID 1. All values are float32, reads must start on an even register with an even count, and writes use FC16 only. The LCD scroll pages show the address, baud and parity if you forget them.",
+  "sources": [
+    {
+      "title": "SDM120Modbus Modbus Protocol Implementation V2.4",
+      "url": "https://www.eastroneurope.com/images/uploads/products/protocol/SDM120-MODBUS_Protocol.pdf",
+      "status": "observed"
+    },
+    {
+      "title": "Eastron SDM120-M User Manual V1.0",
+      "url": "https://www.eastrongroup.com/eastrongroup/2025/03/22/eastronsdm120-musermanualv1.0.pdf",
+      "status": "observed"
+    },
+    {
+      "title": "Eastron SDM120-M(MB) User Manual 2026 V1.1",
+      "url": "https://www.eastrongroup.com/eastrongroup/2026/07/23/EastronSDM120-MMBUsermanualV11.pdf",
+      "status": "observed"
+    },
+    {
+      "title": "Eastron SDM120 power meter Modbus configuration (blog)",
+      "url": "https://dariancabot.com/2019/12/18/eastron-sdm120-power-meter-modbus/",
+      "status": "unverified"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Instantaneous and energy",
+      "function": 4,
+      "address": 0,
+      "quantity": 96,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Voltage",
+          "format": "f32",
+          "unit": "V"
+        },
+        {
+          "offset": 6,
+          "name": "Current",
+          "format": "f32",
+          "unit": "A"
+        },
+        {
+          "offset": 12,
+          "name": "Active power",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 18,
+          "name": "Apparent power",
+          "format": "f32",
+          "unit": "VA"
+        },
+        {
+          "offset": 24,
+          "name": "Reactive power",
+          "format": "f32",
+          "unit": "VAr"
+        },
+        {
+          "offset": 30,
+          "name": "Power factor",
+          "format": "f32",
+          "unit": ""
+        },
+        {
+          "offset": 70,
+          "name": "Frequency",
+          "format": "f32",
+          "unit": "Hz"
+        },
+        {
+          "offset": 72,
+          "name": "Import active energy",
+          "format": "f32",
+          "unit": "kWh"
+        },
+        {
+          "offset": 74,
+          "name": "Export active energy",
+          "format": "f32",
+          "unit": "kWh"
+        },
+        {
+          "offset": 76,
+          "name": "Import reactive energy",
+          "format": "f32",
+          "unit": "kVArh"
+        },
+        {
+          "offset": 78,
+          "name": "Export reactive energy",
+          "format": "f32",
+          "unit": "kVArh"
+        },
+        {
+          "offset": 80,
+          "name": "Apparent energy",
+          "format": "f32",
+          "unit": "kVAh"
+        },
+        {
+          "offset": 82,
+          "name": "Ah",
+          "format": "f32",
+          "unit": "Ah"
+        },
+        {
+          "offset": 84,
+          "name": "Total system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 86,
+          "name": "Max total system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 88,
+          "name": "Import system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 90,
+          "name": "Max import system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 92,
+          "name": "Export system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 94,
+          "name": "Max export system power demand",
+          "format": "f32",
+          "unit": "W"
+        }
+      ]
+    },
+    {
+      "name": "Demand and totals",
+      "function": 4,
+      "address": 258,
+      "quantity": 88,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Current demand",
+          "format": "f32",
+          "unit": "A"
+        },
+        {
+          "offset": 6,
+          "name": "Max current demand",
+          "format": "f32",
+          "unit": "A"
+        },
+        {
+          "offset": 84,
+          "name": "Total active energy",
+          "format": "f32",
+          "unit": "kWh"
+        },
+        {
+          "offset": 86,
+          "name": "Total reactive energy",
+          "format": "f32",
+          "unit": "kVArh"
+        }
+      ]
+    },
+    {
+      "name": "Integer energy",
+      "function": 4,
+      "address": 10000,
+      "quantity": 28,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Total import active energy",
+          "format": "i64",
+          "unit": "Wh"
+        },
+        {
+          "offset": 4,
+          "name": "Total export active energy",
+          "format": "i64",
+          "unit": "Wh"
+        },
+        {
+          "offset": 8,
+          "name": "Total import reactive energy",
+          "format": "i64",
+          "unit": "VArh"
+        },
+        {
+          "offset": 12,
+          "name": "Total export reactive energy",
+          "format": "i64",
+          "unit": "VArh"
+        },
+        {
+          "offset": 16,
+          "name": "Total apparent energy",
+          "format": "i64",
+          "unit": "VAh"
+        },
+        {
+          "offset": 20,
+          "name": "Total active energy",
+          "format": "i64",
+          "unit": "Wh"
+        },
+        {
+          "offset": 24,
+          "name": "Total reactive energy",
+          "format": "i64",
+          "unit": "VArh"
+        }
+      ]
+    },
+    {
+      "name": "Integer instantaneous",
+      "function": 4,
+      "address": 10250,
+      "quantity": 64,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Voltage",
+          "format": "i32",
+          "scale": 0.1,
+          "unit": "V",
+          "decimals": 1
+        },
+        {
+          "offset": 6,
+          "name": "Current",
+          "format": "i32",
+          "scale": 0.001,
+          "unit": "A",
+          "decimals": 3
+        },
+        {
+          "offset": 12,
+          "name": "Active power",
+          "format": "i32",
+          "scale": 0.1,
+          "unit": "W",
+          "decimals": 1
+        },
+        {
+          "offset": 18,
+          "name": "Apparent power",
+          "format": "i32",
+          "scale": 0.1,
+          "unit": "VA",
+          "decimals": 1
+        },
+        {
+          "offset": 24,
+          "name": "Reactive power",
+          "format": "i32",
+          "scale": 0.1,
+          "unit": "VAr",
+          "decimals": 1
+        },
+        {
+          "offset": 30,
+          "name": "Power factor",
+          "format": "i32",
+          "scale": 0.01,
+          "decimals": 2
+        },
+        {
+          "offset": 58,
+          "name": "Frequency",
+          "format": "i32",
+          "scale": 0.01,
+          "unit": "Hz",
+          "decimals": 2
+        },
+        {
+          "offset": 60,
+          "name": "CO2",
+          "format": "i64",
+          "scale": 0.001,
+          "unit": "kg",
+          "decimals": 3
+        }
+      ]
+    },
+    {
+      "name": "Meter info",
+      "function": 3,
+      "address": 64512,
+      "quantity": 4,
+      "scan_rate_ms": 5000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Serial number",
+          "format": "u32"
+        },
+        {
+          "offset": 2,
+          "name": "Meter code",
+          "format": "hex16"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Meter ID",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 20,
+      "encoding": "f32",
+      "min": 1,
+      "max": 247,
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 28,
+      "encoding": "f32",
+      "choices": [
+        {
+          "value": 0,
+          "label": "2400",
+          "baud": 2400
+        },
+        {
+          "value": 1,
+          "label": "4800",
+          "baud": 4800
+        },
+        {
+          "value": 2,
+          "label": "9600",
+          "baud": 9600
+        },
+        {
+          "value": 3,
+          "label": "19200",
+          "baud": 19200
+        },
+        {
+          "value": 4,
+          "label": "38400",
+          "baud": 38400
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    },
+    {
+      "key": "parity",
+      "name": "Parity / stop bits",
+      "role": "parity",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 18,
+      "encoding": "f32",
+      "choices": [
+        {
+          "value": 0,
+          "label": "None, 1 stop",
+          "parity": "N",
+          "stop_bits": 1
+        },
+        {
+          "value": 1,
+          "label": "Even, 1 stop",
+          "parity": "E",
+          "stop_bits": 1
+        },
+        {
+          "value": 2,
+          "label": "Odd, 1 stop",
+          "parity": "O",
+          "stop_bits": 1
+        },
+        {
+          "value": 3,
+          "label": "None, 2 stop",
+          "parity": "N",
+          "stop_bits": 2
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    },
+    {
+      "key": "demand_period",
+      "name": "Demand period (min)",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 2,
+      "encoding": "f32",
+      "min": 0,
+      "max": 60,
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    }
+  ],
+  "before_write": "Hold the button 3 s until -SEt- is shown, then write; power-cycle the meter afterwards. (Unverified wording from a secondary source.)"
+}

@@ -1,0 +1,340 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "sdm120-legacy",
+  "name": "SDM120-Modbus / SDM120M",
+  "vendor": "Eastron",
+  "category": "Energy",
+  "status": "partial",
+  "notes": "Legacy SDM120-Modbus / SDM120M: defaults 2400 8N1, ID 1. All values are float32, reads must start on an even register with an even count, and writes use FC16 only. The LCD scroll pages show the address, baud and parity if you forget them.",
+  "sources": [
+    {
+      "title": "SDM120Modbus Modbus Protocol Implementation V2.4",
+      "url": "https://www.eastroneurope.com/images/uploads/products/protocol/SDM120-MODBUS_Protocol.pdf",
+      "status": "observed"
+    },
+    {
+      "title": "Eastron SDM120M User Manual V2.9",
+      "url": "https://www.eastrongroup.com/eastrongroup/2024/08/21/eastronsdm120musermanualv2.9.pdf",
+      "status": "observed"
+    },
+    {
+      "title": "Eastron SDM120 power meter Modbus configuration (blog)",
+      "url": "https://dariancabot.com/2019/12/18/eastron-sdm120-power-meter-modbus/",
+      "status": "unverified"
+    }
+  ],
+  "serial": {
+    "baud": 2400,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Instantaneous and energy",
+      "function": 4,
+      "address": 0,
+      "quantity": 96,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Voltage",
+          "format": "f32",
+          "unit": "V"
+        },
+        {
+          "offset": 6,
+          "name": "Current",
+          "format": "f32",
+          "unit": "A"
+        },
+        {
+          "offset": 12,
+          "name": "Active power",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 18,
+          "name": "Apparent power",
+          "format": "f32",
+          "unit": "VA"
+        },
+        {
+          "offset": 24,
+          "name": "Reactive power",
+          "format": "f32",
+          "unit": "VAr"
+        },
+        {
+          "offset": 30,
+          "name": "Power factor",
+          "format": "f32",
+          "unit": ""
+        },
+        {
+          "offset": 70,
+          "name": "Frequency",
+          "format": "f32",
+          "unit": "Hz"
+        },
+        {
+          "offset": 72,
+          "name": "Import active energy",
+          "format": "f32",
+          "unit": "kWh"
+        },
+        {
+          "offset": 74,
+          "name": "Export active energy",
+          "format": "f32",
+          "unit": "kWh"
+        },
+        {
+          "offset": 76,
+          "name": "Import reactive energy",
+          "format": "f32",
+          "unit": "kVArh"
+        },
+        {
+          "offset": 78,
+          "name": "Export reactive energy",
+          "format": "f32",
+          "unit": "kVArh"
+        },
+        {
+          "offset": 84,
+          "name": "Total system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 86,
+          "name": "Max total system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 88,
+          "name": "Import system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 90,
+          "name": "Max import system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 92,
+          "name": "Export system power demand",
+          "format": "f32",
+          "unit": "W"
+        },
+        {
+          "offset": 94,
+          "name": "Max export system power demand",
+          "format": "f32",
+          "unit": "W"
+        }
+      ]
+    },
+    {
+      "name": "Demand and totals",
+      "function": 4,
+      "address": 258,
+      "quantity": 88,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Current demand",
+          "format": "f32",
+          "unit": "A"
+        },
+        {
+          "offset": 6,
+          "name": "Max current demand",
+          "format": "f32",
+          "unit": "A"
+        },
+        {
+          "offset": 84,
+          "name": "Total active energy",
+          "format": "f32",
+          "unit": "kWh"
+        },
+        {
+          "offset": 86,
+          "name": "Total reactive energy",
+          "format": "f32",
+          "unit": "kVArh"
+        }
+      ]
+    },
+    {
+      "name": "Meter info",
+      "function": 3,
+      "address": 64512,
+      "quantity": 4,
+      "scan_rate_ms": 5000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Serial number",
+          "format": "u32"
+        },
+        {
+          "offset": 2,
+          "name": "Meter code",
+          "format": "hex16"
+        },
+        {
+          "offset": 3,
+          "name": "Software version",
+          "format": "hex16"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Meter ID",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 20,
+      "encoding": "f32",
+      "min": 1,
+      "max": 247,
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 28,
+      "encoding": "f32",
+      "choices": [
+        {
+          "value": 5,
+          "label": "1200",
+          "baud": 1200
+        },
+        {
+          "value": 0,
+          "label": "2400",
+          "baud": 2400
+        },
+        {
+          "value": 1,
+          "label": "4800",
+          "baud": 4800
+        },
+        {
+          "value": 2,
+          "label": "9600",
+          "baud": 9600
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    },
+    {
+      "key": "parity",
+      "name": "Parity / stop bits",
+      "role": "parity",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 18,
+      "encoding": "f32",
+      "choices": [
+        {
+          "value": 0,
+          "label": "None, 1 stop",
+          "parity": "N",
+          "stop_bits": 1
+        },
+        {
+          "value": 1,
+          "label": "Even, 1 stop",
+          "parity": "E",
+          "stop_bits": 1
+        },
+        {
+          "value": 2,
+          "label": "Odd, 1 stop",
+          "parity": "O",
+          "stop_bits": 1
+        },
+        {
+          "value": 3,
+          "label": "None, 2 stop",
+          "parity": "N",
+          "stop_bits": 2
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    },
+    {
+      "key": "demand_period",
+      "name": "Demand period (min)",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 16,
+      "register": 2,
+      "encoding": "f32",
+      "choices": [
+        {
+          "value": 0,
+          "label": "0"
+        },
+        {
+          "value": 5,
+          "label": "5"
+        },
+        {
+          "value": 8,
+          "label": "8"
+        },
+        {
+          "value": 10,
+          "label": "10"
+        },
+        {
+          "value": 15,
+          "label": "15"
+        },
+        {
+          "value": 20,
+          "label": "20"
+        },
+        {
+          "value": 30,
+          "label": "30"
+        },
+        {
+          "value": 60,
+          "label": "60"
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": true,
+      "note": "Eastron does not state that writes need set-up mode; that step comes from a secondary source. Power-cycle the meter to apply."
+    }
+  ],
+  "before_write": "Hold the button 3 s until -SEt- is shown, then write; power-cycle the meter afterwards. (Unverified wording from a secondary source.)"
+}

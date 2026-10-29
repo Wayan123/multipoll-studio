@@ -1,0 +1,44 @@
+# --- never publish: third-party proprietary material used for local study only ---
+# Witte Software Modbus Poll binaries, help file, decompiled help, resource dumps (see re/REPORT.md)
+re/artifacts/
+re/chm/
+re/out/
+re/objdump_x.txt
+# vendor tools and manuals (Volison AOSen.exe, device PDFs)
+*.exe
+*.chm
+*.pdf
+!openpoll-win/dist/.keep
+
+# --- local-only notes and research drafts (agent/working material) ---
+AGENTS.md
+docs/operations/
+outputs/.drafts/
+outputs/.plans/
+
+# --- build output ---
+openpoll-win/dist/
+openpoll-win/obj/
+**/bin/
+**/obj/
+
+# --- python ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# --- secrets and editor state ---
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,107 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "bgt-smps",
+  "name": "BGT-SMPS soil 8-in-1",
+  "vendor": "BGT",
+  "category": "Soil",
+  "status": "observed",
+  "notes": "Defaults 9600 8N1, ID 1. To find a forgotten address, query address 254 with only this sensor on the bus. The manual documents no baud register.",
+  "sources": [
+    {
+      "title": "Manual for BGT-SMPS Soil Multi-Parameter Sensor (2026-04-27)",
+      "url": "Manual for BGT-SMPS Soil Multi-Parameter Sensor (2026-04-27土壤八合一新款).pdf",
+      "status": "observed"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Soil",
+      "function": 3,
+      "address": 0,
+      "quantity": 8,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Temperature",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "°C",
+          "decimals": 1
+        },
+        {
+          "offset": 1,
+          "name": "Moisture",
+          "scale": 0.1,
+          "unit": "%",
+          "decimals": 1
+        },
+        {
+          "offset": 2,
+          "name": "EC",
+          "unit": "µS/cm"
+        },
+        {
+          "offset": 3,
+          "name": "Salinity",
+          "unit": "µS/cm"
+        },
+        {
+          "offset": 4,
+          "name": "Nitrogen",
+          "unit": "mg/kg"
+        },
+        {
+          "offset": 5,
+          "name": "Phosphorus",
+          "unit": "mg/kg"
+        },
+        {
+          "offset": 6,
+          "name": "Potassium",
+          "unit": "mg/kg"
+        },
+        {
+          "offset": 7,
+          "name": "pH",
+          "scale": 0.01,
+          "decimals": 2
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Slave address",
+      "role": "slave_id",
+      "read_function": 0,
+      "write_function": 6,
+      "register": 48,
+      "encoding": "u16",
+      "min": 1,
+      "max": 253,
+      "apply": "immediate",
+      "verified": false,
+      "note": "The FC06 write to 0x0030 is documented. Readback, the allowed range and whether a restart is needed are not stated."
+    }
+  ],
+  "recovery": {
+    "address": 254,
+    "function": 3,
+    "register": 0,
+    "count": 1,
+    "id_from": "reply",
+    "verified": true,
+    "note": "Broadcast query address 0xFE; the reply carries the real address. Only one device may be on the bus."
+  }
+}

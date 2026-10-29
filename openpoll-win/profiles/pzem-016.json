@@ -1,0 +1,158 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "pzem-016",
+  "name": "PZEM-014 / PZEM-016",
+  "vendor": "Peacefair",
+  "category": "Energy",
+  "status": "partial",
+  "notes": "Fixed 9600 8N1. The factory slave address is not stated in the manual, so 1 is assumed. Current, power and energy are 32-bit values with the low word first.",
+  "sources": [
+    {
+      "title": "PZEM-014/016 AC communication module manual",
+      "url": "https://images-na.ssl-images-amazon.com/images/I/81GtkIOyZaL.pdf",
+      "status": "third-party"
+    },
+    {
+      "title": "Peacefair product page",
+      "url": "https://en.peacefair.cn/product/771.html",
+      "status": "observed"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": true
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Measurements",
+      "function": 4,
+      "address": 0,
+      "quantity": 10,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Voltage",
+          "scale": 0.1,
+          "unit": "V",
+          "decimals": 1
+        },
+        {
+          "offset": 1,
+          "name": "Current",
+          "format": "u32_cdab",
+          "scale": 0.001,
+          "unit": "A",
+          "decimals": 3
+        },
+        {
+          "offset": 3,
+          "name": "Active power",
+          "format": "u32_cdab",
+          "scale": 0.1,
+          "unit": "W",
+          "decimals": 1
+        },
+        {
+          "offset": 5,
+          "name": "Active energy",
+          "format": "u32_cdab",
+          "unit": "Wh"
+        },
+        {
+          "offset": 7,
+          "name": "Frequency",
+          "scale": 0.1,
+          "unit": "Hz",
+          "decimals": 1
+        },
+        {
+          "offset": 8,
+          "name": "Power factor",
+          "scale": 0.01,
+          "decimals": 2
+        },
+        {
+          "offset": 9,
+          "name": "Alarm (0xFFFF = alarm)",
+          "format": "hex16"
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "function": 3,
+      "address": 1,
+      "quantity": 2,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Power alarm threshold",
+          "unit": "W"
+        },
+        {
+          "offset": 1,
+          "name": "Slave address"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Slave address",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 2,
+      "encoding": "u16",
+      "min": 1,
+      "max": 247,
+      "apply": "immediate",
+      "verified": false,
+      "note": "Register and write are documented; whether the new address applies at once is not stated."
+    },
+    {
+      "key": "power_alarm_threshold",
+      "name": "Power alarm threshold (W)",
+      "role": "other",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 1,
+      "encoding": "u16",
+      "min": 1,
+      "max": 65535,
+      "apply": "immediate",
+      "verified": false,
+      "note": "Register documented; upper limit and apply timing not stated."
+    }
+  ],
+  "actions": [
+    {
+      "key": "reset_energy",
+      "name": "Reset energy",
+      "confirm": "Reset the accumulated energy counter to 0?",
+      "steps": [
+        {
+          "raw_pdu": "42"
+        }
+      ],
+      "verified": false
+    }
+  ],
+  "recovery": {
+    "address": 248,
+    "function": 3,
+    "register": 2,
+    "count": 1,
+    "id_from": "register",
+    "verified": false,
+    "note": "0xF8 is the general address for a single-slave bus; reading register 2 there is not explicitly documented."
+  }
+}

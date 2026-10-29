@@ -1,0 +1,113 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "jxbs-3001-tr",
+  "name": "JXBS-3001-TR",
+  "vendor": "JXCT",
+  "category": "Soil",
+  "status": "partial",
+  "notes": "Soil temperature and humidity. Default 9600 8N1; the manual does not state the default address, so 1 is assumed. Address and baud writes are unverified.",
+  "sources": [
+    {
+      "title": "JXCT JXBS-3001-TR instruction manual V1.1",
+      "url": "http://jxctiot.com/upload/file/1557126748.pdf",
+      "status": "observed"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Soil",
+      "function": 3,
+      "address": 2,
+      "quantity": 2,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Soil humidity",
+          "scale": 0.1,
+          "unit": "%",
+          "decimals": 1
+        },
+        {
+          "offset": 1,
+          "name": "Soil temperature",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "°C",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "function": 3,
+      "address": 256,
+      "quantity": 2,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Device address"
+        },
+        {
+          "offset": 1,
+          "name": "Baud rate"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Device address",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 256,
+      "encoding": "u16",
+      "min": 1,
+      "max": 252,
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The manual does not document the write function code; FC06 is assumed. Restart behaviour is not stated."
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 257,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 2400,
+          "label": "2400",
+          "baud": 2400
+        },
+        {
+          "value": 4800,
+          "label": "4800",
+          "baud": 4800
+        },
+        {
+          "value": 9600,
+          "label": "9600",
+          "baud": 9600
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The manual does not document the write function code; FC06 is assumed. Whether the register holds the bps value or a code is not stated; the bps value is assumed. Restart behaviour is not stated."
+    }
+  ]
+}

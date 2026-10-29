@@ -1,0 +1,114 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "xy-md02",
+  "name": "XY-MD02",
+  "vendor": "XY (unbranded)",
+  "category": "Climate",
+  "status": "partial",
+  "notes": "Defaults 9600 8N1, ID 1. Only 9600 and 19200 are offered because other baud values are undocumented. The datasheet does not say whether address or baud changes need a restart.",
+  "sources": [
+    {
+      "title": "XY-MD02 datasheet (SHT20)",
+      "url": "http://sah.rs/media/sah/techdocs/xy-md02-manual.pdf",
+      "status": "third-party"
+    },
+    {
+      "title": "XY-MD02 datasheet (SHT40 revision)",
+      "url": "https://www.hestore.hu/prod_getfile.php?id=19089",
+      "status": "third-party"
+    }
+  ],
+  "serial": {
+    "baud": 9600,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Climate",
+      "function": 4,
+      "address": 1,
+      "quantity": 2,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Temperature",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "°C",
+          "decimals": 1
+        },
+        {
+          "offset": 1,
+          "name": "Humidity",
+          "scale": 0.1,
+          "unit": "%RH",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "function": 3,
+      "address": 257,
+      "quantity": 2,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Slave address"
+        },
+        {
+          "offset": 1,
+          "name": "Baud rate",
+          "unit": "bps"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Slave address",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 257,
+      "encoding": "u16",
+      "min": 1,
+      "max": 247,
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "Register documented; restart behaviour not stated, so power-cycle to be safe."
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 258,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 9600,
+          "label": "9600",
+          "baud": 9600
+        },
+        {
+          "value": 19200,
+          "label": "19200",
+          "baud": 19200
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The register holds the literal bps value; accepted values and restart behaviour are not documented."
+    }
+  ]
+}

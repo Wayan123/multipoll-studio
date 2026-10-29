@@ -1,0 +1,143 @@
+{
+  "format": "multipoll-profile",
+  "version": 1,
+  "id": "rs-n01-soil",
+  "name": "RS-…-N01 soil transmitter",
+  "vendor": "Renke (inferred)",
+  "category": "Soil",
+  "status": "partial",
+  "notes": "Soil moisture and temperature transmitter (RS-WS-N01-TR-1 / RS-SD-N01-TR-1). Defaults 4800 8N1, ID 1. The moisture-only variant has no temperature register.",
+  "sources": [
+    {
+      "title": "Soil temperature and moisture transmitter 485 type manual V1.0",
+      "url": "https://vctec.co.kr/web/product/seeedstudio/img/P0000ZHZ.pdf",
+      "status": "third-party"
+    },
+    {
+      "title": "Renke product page (model naming only)",
+      "url": "https://www.renkeer.com/product/modbus-rtu-temperature-sensor/",
+      "status": "unverified"
+    }
+  ],
+  "serial": {
+    "baud": 4800,
+    "parity": "N",
+    "data_bits": 8,
+    "stop_bits": 1,
+    "baud_fixed": false
+  },
+  "slave_id": 1,
+  "blocks": [
+    {
+      "name": "Soil",
+      "function": 3,
+      "address": 0,
+      "quantity": 2,
+      "scan_rate_ms": 1000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Water content",
+          "scale": 0.1,
+          "unit": "%",
+          "decimals": 1
+        },
+        {
+          "offset": 1,
+          "name": "Temperature",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "°C",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "name": "Calibration",
+      "function": 3,
+      "address": 80,
+      "quantity": 2,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Temperature calibration",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "°C",
+          "decimals": 1
+        },
+        {
+          "offset": 1,
+          "name": "Moisture calibration",
+          "format": "i16",
+          "scale": 0.1,
+          "unit": "%",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "function": 3,
+      "address": 2000,
+      "quantity": 2,
+      "scan_rate_ms": 2000,
+      "points": [
+        {
+          "offset": 0,
+          "name": "Device address"
+        },
+        {
+          "offset": 1,
+          "name": "Baud code"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "key": "slave_id",
+      "name": "Device address",
+      "role": "slave_id",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 2000,
+      "encoding": "u16",
+      "min": 1,
+      "max": 254,
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The manual does not document the write function code; FC06 is assumed. Restart behaviour is not stated."
+    },
+    {
+      "key": "baud",
+      "name": "Baud rate",
+      "role": "baud",
+      "read_function": 3,
+      "write_function": 6,
+      "register": 2001,
+      "encoding": "u16",
+      "choices": [
+        {
+          "value": 0,
+          "label": "2400",
+          "baud": 2400
+        },
+        {
+          "value": 1,
+          "label": "4800",
+          "baud": 4800
+        },
+        {
+          "value": 2,
+          "label": "9600",
+          "baud": 9600
+        }
+      ],
+      "apply": "power_cycle",
+      "verified": false,
+      "note": "The manual does not document the write function code; FC06 is assumed. Restart behaviour is not stated."
+    }
+  ]
+}
