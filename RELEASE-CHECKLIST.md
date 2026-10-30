@@ -49,8 +49,10 @@ Facts behind each item: `outputs/github-release-legal.md` (sources quoted there)
 - [x] **Compute and verify the final executable's SHA-256.**
       `90d65a7a1b8c1d7fb5afef8e384c31f8f6c90fc2a0cff5bb991d816433d85915`
       (359,424 bytes; version 0.5.1.0). Recompute if the executable changes.
-- [ ] **Publish the GitHub Release and verify downloads.** Attach `MultiPollStudio.exe` and its SHA-256;
-      do not commit the executable. Confirm the published asset and checksum match the final validated build
-      before marking publication complete.
+- [x] **Publish the GitHub Release and verify downloads.** Published
+      [v0.5.1](https://github.com/Wayan123/multipoll-studio/releases/tag/v0.5.1) with EXE, ZIP, license, notices,
+      build manifest, lightweight runtime SBOM, checksums and separate SSH signature. Downloaded all 12 assets:
+      each matched the local payload byte-for-byte; ZIP EXE/license, SHA-256 entries and SSH signature verified.
+      The SSH signature does not change the EXE's unsigned Authenticode status.
 - [ ] **Determine the legal publisher identity and country** (person or PT AGS) and assess the applicable
       EU CRA role (roadmap brief §2.5). The GitHub account name alone does not settle this.
