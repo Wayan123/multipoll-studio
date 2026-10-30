@@ -13,7 +13,8 @@ namespace MultiPollStudio.Tests
 {
     /// <summary>In-process GUI smoke test: drives the real MainForm/PollWindow/dialogs in a Windows message loop against
     /// tools/demo_slave.py. Build: ./build.sh uitest. Run: MultiPollStudioUiTest.exe host port outdir. Exit code = failures.
-    /// Never writes HKCU\Software\MultiPollStudio: connection settings are set directly and no settings dialogs are confirmed.</summary>
+    /// Uses an owned per-run HKCU key and audit files under outdir; screenshots are app-rendered DrawToBitmap images,
+    /// not desktop captures or interaction recordings.</summary>
     static partial class UiSmoke
     {
         static int _failures;
@@ -71,7 +72,10 @@ namespace MultiPollStudio.Tests
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // isolate from the user's settings and audit trail
-            MainForm.SettingsKey = @"Software\MultiPollStudio-UiTest";
+            string settingsKey = @"Software\MultiPollStudio-UiTest-" + Guid.NewGuid().ToString("N");
+            using (var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(settingsKey))
+                key.SetValue("UiSmokeRun", settingsKey);
+            MainForm.SettingsKey = settingsKey;
             MainForm.AuditPath = Path.Combine(_outDir, "uitest-main-audit.jsonl");
             var main = new MainForm { TopMost = true };
             // watchdog: a modal box nobody answers must fail the run, not hang it
@@ -80,7 +84,7 @@ namespace MultiPollStudio.Tests
                 _log.WriteLine("FAIL watchdog: run did not finish within 8 minutes (a modal dialog probably blocked it)");
                 _log.WriteLine("UITEST FAILED: " + (_failures + 1));
                 _log.Flush();
-                Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(MainForm.SettingsKey, false);
+                Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(settingsKey, false);
                 Environment.Exit(99);
             }, null, 8 * 60 * 1000, System.Threading.Timeout.Infinite);
             main.Shown += async (o, e) =>
@@ -100,9 +104,13 @@ namespace MultiPollStudio.Tests
                     main.Close();
                 }
             };
-            Application.Run(main);
-            Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(MainForm.SettingsKey, false);
-            _log.Dispose();
+            try { Application.Run(main); }
+            finally
+            {
+                watchdog.Dispose();
+                Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(settingsKey, false);
+                _log.Dispose();
+            }
             return _failures;
         }
 
@@ -185,6 +193,19 @@ namespace MultiPollStudio.Tests
             w1.ApplyDefinition(new PollDefinition { Function = 3, Address = 0, Quantity = 20, ScanRateMs = 200 },
                                new ViewOptions { PlcAddresses = true, Rows = 10 });
             Check("w1 values arrive", await Until(() => w1.Values != null));
+            using (var connection = new ConnectionDialog(main.ConnSettings))
+            {
+                connection.Show(main);
+                Shot(connection, "connection_setup.png");
+                connection.Close();
+            }
+            using (var definition = new DefinitionDialog(w1.Doc.Definition, w1.Doc.View, w1.ApplyDefinition,
+                                                         () => w1.Engine.ReadOnce(w1.PollId)))
+            {
+                definition.Show(main);
+                Shot(definition, "poll_setup.png");
+                definition.Close();
+            }
             Check("w1 header 40001", w1.Grid.Columns[1].HeaderText == "40001", w1.Grid.Columns[1].HeaderText);
             Check("w1 signed values", Cell(w1, 0) == "100" && Cell(w1, 1) == "-1", Cell(w1, 0) + "," + Cell(w1, 1));
 
@@ -243,21 +264,21 @@ namespace MultiPollStudio.Tests
             Shot(main, "main.png");
 
             // write dialogs, shown non-modally and sent with their real Send button
-            await Dialog(main, new WriteSingleCoilDialog(main.Engine, 1, 20, false, 1), "05 single coil", null);
+            await Dialog(main, new WriteSingleCoilDialog(main.Engine, 1, 20, false, 1), "05 single coil", null, "fc05_success.png");
             Check("05 effect", await ReadEq(main, 1, 20, 1, new[] { 1 }));
 
             var d06 = new WriteRegisterDialog(main.Engine, 1, 60, false, DisplayFormat.Signed, "0");
-            await Dialog(main, d06, "06 single register", () => Field<TextBox>(d06, "_value").Text = "-7");
+            await Dialog(main, d06, "06 single register", () => Field<TextBox>(d06, "_value").Text = "-7", "fc06_success.png");
             Check("06 effect", await ReadEq(main, 3, 60, 1, new[] { 65529 }));
 
             var d16f = new WriteRegisterDialog(main.Engine, 1, 62, false, DisplayFormat.Float, "0");
-            await Dialog(main, d16f, "16 float via register dialog", () => Field<TextBox>(d16f, "_value").Text = "2,5");
+            await Dialog(main, d16f, "16 float via register dialog", () => Field<TextBox>(d16f, "_value").Text = "2,5", "fc16_float_success.png");
             Check("16 float effect", await ReadEq(main, 3, 62, 2, Formats.Encode(2.5, DisplayFormat.Float)));
 
-            await Dialog(main, new WriteCoilsDialog(main.Engine, 1, 30, false, 3, new[] { 1, 0, 1 }), "15 multiple coils", null);
+            await Dialog(main, new WriteCoilsDialog(main.Engine, 1, 30, false, 3, new[] { 1, 0, 1 }), "15 multiple coils", null, "fc15_success.png");
             Check("15 effect", await ReadEq(main, 1, 30, 3, new[] { 1, 0, 1 }));
 
-            await Dialog(main, new WriteRegistersDialog(main.Engine, 1, 70, false, 3, new[] { 9, 8, 7 }), "16 multiple registers", null);
+            await Dialog(main, new WriteRegistersDialog(main.Engine, 1, 70, false, 3, new[] { 9, 8, 7 }), "16 multiple registers", null, "fc16_success.png");
             Check("16 effect", await ReadEq(main, 3, 70, 3, new[] { 9, 8, 7 }));
 
             await main.Engine.Write(1, Pdu.WriteSingleRegister(80, 0x00F2));
@@ -266,7 +287,7 @@ namespace MultiPollStudio.Tests
             {
                 Field<TextBox>(d22, "_and").Text = "00F0";
                 Field<TextBox>(d22, "_or").Text = "0025";
-            });
+            }, "fc22_success.png");
             Check("22 effect", await ReadEq(main, 3, 80, 1, new[] { 0x00F5 }));
 
             var d23 = new ReadWriteRegistersDialog(main.Engine, 1, 90, false, 2, new[] { 11, 12 });
@@ -274,7 +295,7 @@ namespace MultiPollStudio.Tests
             {
                 Field<NumericUpDown>(d23, "_readAddress").Value = 70;
                 Field<NumericUpDown>(d23, "_readQuantity").Value = 3;
-            });
+            }, "fc23_success.png");
             ListBox rr = Field<ListBox>(d23, "_readResult");
             Check("23 read result list", rr.Items.Count == 3 && (string)rr.Items[0] == "00070 = 9", rr.Items.Count > 0 ? (string)rr.Items[0] : "empty");
             Check("23 written", await ReadEq(main, 3, 90, 2, new[] { 11, 12 }));
@@ -315,12 +336,21 @@ namespace MultiPollStudio.Tests
             Check("workspace reload window count", main.Windows.Count() == before, before + " -> " + main.Windows.Count());
             PollWindow anyW = main.Windows.FirstOrDefault(w => w.Doc.Definition.Function == 4);
             Check("workspace window polls again", anyW != null && await Until(() => anyW.Values != null));
+            main.LayoutMdi(MdiLayout.TileVertical);
+            Shot(main, "workspace_restored.png");
 
             // log file
             PollWindow lw = main.Windows.First(w => w.Doc.Definition.Function == 3 && w.Doc.Definition.Address == 0);
             string logPath = Path.Combine(_outDir, "log.csv");
             if (File.Exists(logPath)) File.Delete(logPath);
-            lw.StartLog(new LogSettings { Path = logPath, Delimiter = Delimiter.Comma });
+            using (var logging = new LogDialog())
+            {
+                Field<TextBox>(logging, "_path").Text = logPath;
+                logging.Show(main);
+                Shot(logging, "logging_setup.png");
+                lw.StartLog(logging.Result());
+                logging.Close();
+            }
             await Until(() => File.Exists(logPath) && new FileInfo(logPath).Length > 0, 3000);
             await Task.Delay(500);
             lw.StopLog();
@@ -358,6 +388,14 @@ namespace MultiPollStudio.Tests
             Point p0 = w.CellOf(0);
             Check("alarm colours cell", w.Grid[p0.X, p0.Y].Style.BackColor.ToArgb() != Color.Empty.ToArgb());
             Check("status shows KPIs and alarms", w.StatusText.Contains("OK ") && w.StatusText.Contains("RTT ") && w.StatusText.Contains("ALARMS 1"), w.StatusText);
+            w.Activate();
+            Shot(w, "alarm_active.png");
+            using (var tag = new TagDialog("40001", w.Doc.TagAt(0), true))
+            {
+                tag.Show(main);
+                Shot(tag, "tag_setup.png");
+                tag.Close();
+            }
 
             // grid write in engineering units: 8.5 °C -> raw 85, clears the alarm (8.5 < 9 - 0.5)
             string desc;
@@ -371,6 +409,7 @@ namespace MultiPollStudio.Tests
             Check("scaled write read back", await Until(() => Cell(w, 0) == "8.5 °C"), Cell(w, 0));
             Check("alarm cleared", await Until(() => w.Alarms[0] == AlarmLevel.None));
             Check("alarm history has both transitions", w.AlarmHistory.Count >= 2 && w.AlarmHistory.Last().To == AlarmLevel.None);
+            Shot(w, "alarm_cleared.png");
 
             // write limits
             w.Doc.Tags[0].WriteMax = 50;
@@ -491,6 +530,7 @@ namespace MultiPollStudio.Tests
             var rows = Enumerable.Range(0, main.InterpretWin.RowCount).Select(i => main.InterpretWin.Row(i)).ToList();
             Check("n1 interpret shows float BADC -0.25", rows.Contains("Float32 BADC = -0.25"), string.Join(" | ", rows.Take(12)));
             Check("n1 interpret source", main.InterpretWin.Source.Contains("80BE 0000"), main.InterpretWin.Source);
+            Shot(main.InterpretWin, "interpret_float.png");
             w.Grid.ClearSelection();
             w.Grid[p4.X, p4.Y].Selected = true;
             main.InterpretWin.BringToFront();
@@ -545,11 +585,20 @@ namespace MultiPollStudio.Tests
             // --- profiles: add ADM-4204V (ID 1) → one window per block, values with names and limits
             DeviceProfile adm = main.ProfileById("adm-4204v");
             Check("dev profiles loaded", main.DeviceProfiles.Count >= 10 && adm != null, main.DeviceProfiles.Count.ToString());
+            using (var profiles = new AddDeviceDialog(main.DeviceProfiles, Field<List<string>>(main, "_profileErrors")))
+            {
+                profiles.Choose(adm.Id);
+                profiles.Show(main);
+                Shot(profiles, "device_profiles.png");
+                profiles.Close();
+            }
             List<PollWindow> admWins = main.AddDevice(adm, 1, false);
             PollWindow cfg = admWins.First(w => w.Doc.Definition.Address == 0x9F);
             Check("dev ADM windows per block", admWins.Count == adm.Blocks.Count, admWins.Count.ToString());
             Check("dev ADM config values", await Until(() => cfg.Values != null && Cell(cfg, 0) == "0x8110"), cfg.ErrorText);
             Check("dev ADM aliases", cfg.Doc.Aliases[1] == "Slave ID" && cfg.Text.StartsWith("ADM-4204V ID 1"), cfg.Text);
+            main.LayoutMdi(MdiLayout.TileVertical);
+            Shot(main, "device_profile_windows.png");
 
             // --- Device Settings: read current values, set ID 1 → 9 (FC06 0x00A0), windows follow, read back
             var ds = new DeviceSettingsDialog(main, cfg, adm) { RestartWaitMs = 200 };
@@ -682,12 +731,14 @@ namespace MultiPollStudio.Tests
             main.LoadWorkspace(ws);
             PollWindow th2 = main.Windows.FirstOrDefault(w => w.Doc.Connection != null);
             Check("dev workspace restores own connection", th2 != null && await Until(() => th2.LastStatus == Status.Ok), th2 == null ? "none" : th2.ErrorText);
+            main.LayoutMdi(MdiLayout.TileVertical);
+            Shot(main, "devices_workspace_restored.png");
             main.Disconnect();
             Check("dev disconnect stops all", main.AllEngines.All(e => !e.Running));
             Ui.AutoAnswer = null;
         }
 
-        static async Task Dialog(MainForm main, Form dlg, string name, Action fill)
+        static async Task Dialog(MainForm main, Form dlg, string name, Action fill, string screenshot)
         {
             dlg.Show(main);
             fill?.Invoke();
@@ -696,6 +747,7 @@ namespace MultiPollStudio.Tests
             Field<Button>(dlg, "SendButton").PerformClick();
             bool done = await Until(() => result.Text.Length > 0 && result.Text != "Sending…");
             Check(name + ": Response ok", done && result.Text == "Response ok", result.Text);
+            if (done && result.Text == "Response ok") Shot(dlg, screenshot);
             if (!(dlg is ReadWriteRegistersDialog)) dlg.Close();
         }
 

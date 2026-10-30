@@ -1,16 +1,24 @@
 # Changelog — MultiPoll Studio for Windows
 
-## Unreleased — independent interface
+## 0.5.1 — 2026-10-30
 
 - Rename generated polling windows to `Poll N`; reorganize menus around Poll, Write and Monitor, and label
   `Poll Setup` and `Frame Console`. Poll status displays the unit, function and interval separately from
   request/error counts, with a tooltip containing the full status.
 - Show data type and word order explicitly in display presets. Stored `.mpoll` format keys and decoding
-  semantics remain unchanged.
+  semantics remain unchanged; document and workspace schemas remain at version 1.
 - Format traffic as sequence, direction and bytes. Frame Console list files now require the header
   `MultiPoll Studio Frame List`; replace the first line of older lists after backing them up.
 - Update Python and Windows UI terminology together, without changing Modbus frames or write safeguards.
-- Refresh simulator screenshots using application-window rendering rather than capturing the desktop.
+- Expand the in-process UI smoke fixture's app-rendered screenshots for write dialogs (FC05/06/15/16/22/23,
+  including FC16 float), connection and poll setup, logging, tags, alarm states, Interpret As, workspace restore
+  and device profiles. `DrawToBitmap` renders application forms, not the desktop; these are simulator-only
+  illustrations, not interaction recordings or evidence of hardware compatibility.
+- Isolate each UI smoke run with a unique registry settings key and keep audit output in the run's output
+  directory; cleanup removes only that run's registry key. Release validation results are recorded separately.
+- Release publisher: GitHub account `Wayan123`; license: GPL-3.0-or-later. Authenticode signing is explicitly
+  deferred: the Windows executable is unsigned, may show an unknown-publisher or SmartScreen warning, and may
+  be blocked by Windows security policy. The account name is not a verified legal identity or legal clearance.
 
 ## 0.5.0 — 2026-10-30
 

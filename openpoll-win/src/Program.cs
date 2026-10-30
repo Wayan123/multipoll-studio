@@ -8,9 +8,9 @@ using MultiPollStudio.UI;
 [assembly: AssemblyDescription("Open-source Modbus master test tool")]
 [assembly: AssemblyProduct("MultiPoll Studio")]
 [assembly: AssemblyCopyright("MultiPoll Studio contributors, GPL-3.0-or-later")]
-[assembly: AssemblyVersion("0.5.0.0")]
-[assembly: AssemblyFileVersion("0.5.0.0")]
-[assembly: AssemblyInformationalVersion("0.5.0")]
+[assembly: AssemblyVersion("0.5.1.0")]
+[assembly: AssemblyFileVersion("0.5.1.0")]
+[assembly: AssemblyInformationalVersion("0.5.1")]
 
 namespace MultiPollStudio
 {

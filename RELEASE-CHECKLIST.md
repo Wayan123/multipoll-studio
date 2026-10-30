@@ -11,7 +11,7 @@ Facts behind each item: `outputs/github-release-legal.md` (sources quoted there)
       this is a same-domain near-match, not a determination of trademark rights or likelihood of confusion.
 - [x] **Release authorization.** The project owner confirmed on 2026-10-30 that they are authorized to release
       this code publicly under GPL-3.0-or-later. This confirmation does not independently establish the legal
-      identity of the copyright holder; publisher identity remains to be documented.
+      identity of the copyright holder. The GitHub publisher account is `Wayan123`, not a verified legal identity.
 - [x] **Check tracked third-party artifacts.** The initial commit does not contain the proprietary binaries, help
       files or vendor PDFs excluded by `.gitignore`. This does not establish copyright clearance for text or assets.
 - [x] **Scan published history for secrets.** `gitleaks detect --source . --redact` scanned the initial commit on
@@ -30,11 +30,27 @@ Facts behind each item: `outputs/github-release-legal.md` (sources quoted there)
 - Device profiles contain register facts with their sources; unverified facts are flagged in the file and the UI.
 - `SECURITY.md`, `CONTRIBUTING.md` (DCO sign-off), `README.md`.
 
-## Before a binary release
+## Windows v0.5.1 release
 
-- GitHub publisher account: `Wayan123` (account name, not an independently verified legal copyright holder).
-- Current Windows EXE is unsigned; no Windows code-signing certificate has been supplied.
-- [ ] Decide binary signing and document platform requirements. Unsigned EXEs can be blocked by Windows security
-      policy; signing is not a guarantee of SmartScreen reputation or acceptance.
-- [ ] Attach `MultiPollStudio.exe` and its SHA-256 to a GitHub Release; do not commit it.
-- [ ] Decide the publisher identity (person or PT AGS, country) — it decides the EU CRA role (roadmap brief §2.5).
+- Release license: **GPL-3.0-or-later**. GitHub publisher account: **`Wayan123`** (account name, not an
+  independently verified legal copyright holder). This release decision does not establish legal clearance.
+- [x] **Record binary signing decision.** Authenticode signing is explicitly deferred for v0.5.1; no Windows
+      code-signing certificate has been supplied. The release executable remains **unsigned**. Windows may
+      display an unknown-publisher or SmartScreen warning, and organizational security policy may block it.
+      A SHA-256 checksum verifies matching bytes, not publisher identity; signing would not itself guarantee
+      SmartScreen reputation or acceptance.
+- [x] **Record Windows release validation.** Both builds succeeded on 2026-10-30. Simulator-only checks:
+      selftest 259, main GUI 81, devices GUI 42, toolbar GUI 21; Python tests 37, all passed.
+      The commands and evidence scope are in [`docs/releases/v0.5.1.md`](docs/releases/v0.5.1.md).
+      Per-run registry keys were removed; audit files remain in the local run directory. No hardware accessed.
+- [x] **Refresh and document feature screenshots.** Added 18 app-rendered simulator illustrations
+      (`DrawToBitmap`), visually checked with captions in README. The profile-directory row is masked.
+      Native file/print dialogs and the alarm-history message box are not pictured.
+- [x] **Compute and verify the final executable's SHA-256.**
+      `90d65a7a1b8c1d7fb5afef8e384c31f8f6c90fc2a0cff5bb991d816433d85915`
+      (359,424 bytes; version 0.5.1.0). Recompute if the executable changes.
+- [ ] **Publish the GitHub Release and verify downloads.** Attach `MultiPollStudio.exe` and its SHA-256;
+      do not commit the executable. Confirm the published asset and checksum match the final validated build
+      before marking publication complete.
+- [ ] **Determine the legal publisher identity and country** (person or PT AGS) and assess the applicable
+      EU CRA role (roadmap brief §2.5). The GitHub account name alone does not settle this.

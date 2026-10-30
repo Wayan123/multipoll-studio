@@ -105,7 +105,7 @@ MultiPollStudioUiTest.exe toolbar <host> 5030 <outdir>  # active-ID/bus routing,
 ```
 
 Add `--out=<file>` to write the self-test results to a file. The exit code equals the number of failures.
-`MultiPollStudioUiTest.exe` uses its own registry key (`HKCU\Software\MultiPollStudio-UiTest`, removed afterwards) and its own audit file.
+`MultiPollStudioUiTest.exe` uses a unique registry key (`HKCU\Software\MultiPollStudio-UiTest-<GUID>`, removed afterwards) and audit files under its output directory. Use a separate output directory for each run.
 Run the test EXEs from a Windows folder: the window icon cannot be loaded from a `\\wsl.localhost\` path.
 
 `tools/device_sim.py` (standard library only) simulates ADM-4204V (ID 1), PZEM-016 (2, also 0xF8), SDM120 (3), BGT-SMPS
