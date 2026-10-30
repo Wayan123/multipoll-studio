@@ -6,15 +6,14 @@ The goal is a behavioral specification for writing an independent open-source al
 
 ## Method and limits
 
-- **Static analysis only.** The EXE was never run, debugged, or patched. The registration and trial
-  mechanism (`Software\Nogle\aaa1\Year`, `Software\Witte Software\mbpoll\Register\Key`, string
-  "Error in registration key") was noted as **observed** and deliberately **not analyzed further**.
-- **No code was copied.** Nothing was decompiled or ported. OpenPoll is a clean implementation of the
-  public Modbus specification. Sources: PE resources (menus, dialogs, string tables), the CHM help, and
-  format strings in the binary.
+- **Static analysis only.** The EXE was never run, debugged, or patched. Registration and trial behavior
+  was not analyzed further.
+- Development used the public Modbus specification along with a static study of PE resources, CHM help,
+  and format strings. This was not a formal clean-room process; see `../NOTICE.md`. The recorded study is
+  not a legal clearance or an independent audit of all project history.
 - The proprietary artifacts (`artifacts/`, `chm/`, `out/help/`) are local analysis material.
-  **Do not redistribute them or put them in a public repo.** The license (`license.txt`) only allows
-  unmodified redistribution of the original installer.
+  **Do not redistribute them or put them in a public repo.** The terms of the specific historical installer
+  have not been verified here.
 
 | Artifact | SHA-256 |
 |---|---|
@@ -65,7 +64,7 @@ be set per cell (the menu applies to the selection).
 **Write functions:** 05, 06, 15, 16, 22 (Mask Write), 23 (Read/Write). Dialog 104 picks 06 or 16
 for a single value. The grid can be edited directly (F2 / type / space toggles a coil).
 
-**Status line** (string `Tx = %i: Err = %i: ID = %i: F = %02i: SR = %ims`, plus `(DISABLED)`).
+**Status line:** displays transmission and error counts, unit ID, function and scan interval, plus disabled state.
 
 **Traffic window** (dialog 112, strings `%06u-`, `Tx:`, `Rx:`, `%02X `): `000123-Tx:01 03 ...`,
 Stop/Continue, Stop on Error, Copy, Save.
