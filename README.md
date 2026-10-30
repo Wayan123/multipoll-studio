@@ -53,19 +53,81 @@ the redesigned MultiPoll Studio interface exercised with the simulator.
 
 ![MultiPoll Studio screenshot slideshow: multi-device view, discovery, device settings and diagnosis](assets/demo.gif)
 
-| Feature | Screenshot | What it shows |
-|---|---|---|
-| Multi-device and toolbar | [Multi-device view](assets/screenshots/multi-device.png) | Separate BGT-SMPS ID 4 and XY-MD02 ID 5 windows, register names and engineering units, active-target toolbar, and write-protection indicator. |
-| Find Device | [Read-only search](assets/screenshots/find-device.png) | Baud/parity/ID scan against the simulator; exception replies are shown separately from returned data. |
-| Device Settings | [Settings dialog](assets/screenshots/device-settings.png) | Simulated ADM-4204V ID, baud, parity and configuration options. Writes require the application safeguards and should be used only on authorized equipment. |
-| Diagnosis | [Diagnosis dialog](assets/screenshots/diagnosis.png) | An illegal-function response, explanation, and a read-only switch to FC03. |
-| Display formats | [Format picker](assets/screenshots/display-format.png) and [poll windows](assets/screenshots/data-types.png) | String length and byte order; several polling windows with independent status. |
-| Trend | [Trend chart](assets/screenshots/trend.png) | Two time-series with pause and CSV/PNG export controls. |
-| Communication | [Traffic monitor](assets/screenshots/traffic.png) | Sent and received Modbus frames with stop, copy and save controls. |
-| Frame Console | [Raw-frame console](assets/screenshots/frame-console.png) | A request and response against the simulator, with CRC/LRC options and list controls. |
+### Multi-device polling and toolbar
 
-The GIF and screenshots do not cover every application feature; see the Windows feature list and usage details in
-[`openpoll-win/README.md`](openpoll-win/README.md).
+![Three polling windows for simulated BGT-SMPS and XY-MD02 devices](assets/screenshots/multi-device.png)
+
+The three windows show a BGT-SMPS soil block and XY-MD02 climate and configuration blocks. Each has its own
+unit, function, interval, request/error counters and response times. Profile names, scaling and units make raw
+registers easier to interpret. The toolbar label identifies the active target; its connect and disconnect
+commands affect that connection, including any other windows sharing it. The status bar shows write protection.
+
+### Find Device
+
+![Read-only Find Device search results](assets/screenshots/find-device.png)
+
+Find Device searches selected baud rates, parity settings and unit IDs using single read requests. This example
+shows a full ID range, a selected holding-register read, and results that distinguish data from exception
+replies. **Use selected** applies the selected baud, parity and ID. The dialog warns that the port is released
+from its connection during the search and recommends connecting one device while searching.
+
+### Device Settings
+
+![Simulated ADM-4204V Device Settings dialog](assets/screenshots/device-settings.png)
+
+The dialog compares current values with proposed values for the simulated ADM-4204V, including unit ID, baud,
+parity and output/watchdog settings. **Read all** refreshes settings; each **Set** button applies its setting.
+These operations can write to a device: changes are confirmed and audited, and refused while write protection
+is on. Check the device manual and profile provenance before changing real equipment.
+
+### Diagnosis
+
+![Diagnosis of an illegal-function response](assets/screenshots/diagnosis.png)
+
+The simulated device rejected an FC04 read with an illegal-function exception. The dialog suggests checking the
+manual and offers a switch to FC03 holding registers; the displayed status reports that the device then answered.
+Diagnosis fixes change the application's read configuration rather than writing settings to the device.
+
+### Display formats and polling status
+
+![ASCII string display format with byte order and register length](assets/screenshots/display-format.png)
+
+The format picker configures how registers are interpreted. Here a five-register ASCII string uses BADC byte
+order. Other available formats include numeric types and bit fields; the controls shown depend on the chosen type.
+
+![Four polling windows with read values and an illegal-address response](assets/screenshots/data-types.png)
+
+These polling windows show different read functions and intervals, aliases, address styles, values and independent
+status counters. One reports an illegal-data-address exception and offers **Why? / Fix…**; the image does not
+show every available display type.
+
+### Trend
+
+![Trend chart with two simulated values](assets/screenshots/trend.png)
+
+The chart displays two selected values over a one-minute window. Its controls pause the display, remove a series,
+clear data and export CSV or PNG. The Windows edition supports up to 12 values from different polling windows;
+failed polls appear as gaps.
+
+### Communication traffic
+
+![Communication Traffic monitor showing transmitted and received frames](assets/screenshots/traffic.png)
+
+The traffic monitor lists sequence numbers, TX/RX direction and hexadecimal frame bytes across connections.
+The capture shows controls to stop, copy, save or clear the list and an option to stop on error.
+
+### Frame Console
+
+![Frame Console with a simulated Modbus TCP request and response](assets/screenshots/frame-console.png)
+
+Frame Console sends explicitly entered hexadecimal frames and displays transmitted and received bytes. This
+example uses a Modbus TCP request with **No check** selected. Raw frames bypass normal framing: include the MBAP
+header for Modbus TCP, or use the appropriate CRC/LRC for RTU/ASCII, and check the unit ID before sending.
+Write protection also applies to frames that are not known reads.
+
+These images do not cover every feature: for example, write dialogs, alarms, logging, tag-map editing, the
+Interpret As panel, and workspace management are not pictured. See the
+[`Windows guide`](openpoll-win/README.md) for their usage and limitations.
 
 ## Build and try it
 
