@@ -6,10 +6,14 @@ One ``ModbusMaster`` performs one transaction at a time; callers serialize acces
 """
 from __future__ import annotations
 
+import errno
+import os
 import socket
+import sys
 import time
 from dataclasses import asdict, dataclass, fields
 from enum import Enum
+from pathlib import Path
 from typing import Callable
 
 from . import framing
@@ -97,6 +101,29 @@ class ConnectionSettings:
 
 TrafficCallback = Callable[[str, bytes], None]  # ("Tx" | "Rx", raw bytes)
 
+_LINUX_SERIAL_DIR = Path("/dev/serial")
+
+
+def serial_ports() -> list[tuple[str, str]]:
+    """Return selectable serial paths and their descriptions without opening ports."""
+    from serial.tools import list_ports
+
+    aliases: dict[str, str] = {}
+    if sys.platform == "linux":
+        for directory in ("by-id", "by-path"):
+            for link in sorted((_LINUX_SERIAL_DIR / directory).glob("*")):
+                if link.is_symlink():
+                    aliases.setdefault(os.path.realpath(link), str(link))
+
+    ports = []
+    for port in sorted(list_ports.comports()):
+        path = aliases.get(port.device, port.device)
+        description = port.description or port.device
+        if port.vid is not None and port.pid is not None:
+            description += f" [{port.vid:04X}:{port.pid:04X}]"
+        ports.append((path, description))
+    return ports
+
 
 class _Stream:
     def write(self, data: bytes) -> None: ...
@@ -116,7 +143,10 @@ class _SerialStream(_Stream):
                 stopbits=s.stopbits, timeout=0, rtscts=s.cts_flow, dsrdtr=s.dsr_flow,
             )
         except (serial.SerialException, OSError, ValueError) as exc:
-            raise ModbusError(Status.NO_CONNECTION, f"Port {s.port} not available: {exc}") from None
+            detail = f"Port {s.port} not available: {exc}"
+            if sys.platform == "linux" and getattr(exc, "errno", None) in (errno.EACCES, errno.EPERM):
+                detail += "\nCheck the serial device permissions (usually the dialout group)."
+            raise ModbusError(Status.NO_CONNECTION, detail) from None
         # pyserial asserts DTR on open. RTS starts low when RTS toggle drives an RS-485 transceiver.
         if s.rts_toggle:
             self._set_rts(False)

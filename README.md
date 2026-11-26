@@ -24,6 +24,22 @@ SmartScreen warning, or block execution under security policy. Do not disable Wi
 The release includes SHA-256 checksums and a separate SSH signature; neither is a Windows code-signing certificate.
 See the [release notes and verification instructions](docs/releases/v0.5.1.md).
 
+## Run on Linux
+
+Use the Python edition (Python 3.10 or later). From the repository root:
+
+```sh
+cd openpoll
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install '.[gui]'
+multipoll-studio ports
+multipoll-studio
+```
+
+See [Linux serial setup](openpoll/README.md#linux-serial-setup) for permissions and a read-only RS-485 example.
+The Linux edition does not run the Windows EXE or include all of its features.
+
 ## Features
 
 The Windows edition includes:
