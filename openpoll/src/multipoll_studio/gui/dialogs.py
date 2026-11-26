@@ -13,7 +13,7 @@ from ..formats import DisplayFormat, encode, format_value, parse_coil, parse_val
 from ..model import FUNCTION_LABELS, ROW_CHOICES, PollDefinition, ViewOptions
 from ..protocol import ModbusError
 from ..support import CheckKind, Delimiter, LogSettings, add_check, hex_bytes, load_test_list, parse_hex_string, save_test_list
-from ..transport import ConnectionKind, ConnectionSettings, SerialMode
+from ..transport import ConnectionKind, ConnectionSettings, SerialMode, serial_ports
 from .bridge import post_to_gui
 
 
@@ -24,14 +24,6 @@ def _spin(lo: int, hi: int, value: int, suffix: str = "") -> QSpinBox:
     if suffix:
         s.setSuffix(suffix)
     return s
-
-
-def _serial_ports() -> list[str]:
-    try:
-        from serial.tools import list_ports
-    except ImportError:
-        return []
-    return [p.device for p in list_ports.comports()]
 
 
 def show_error(parent: QWidget, exc: BaseException) -> None:
@@ -59,7 +51,11 @@ class ConnectionDialog(QDialog):
         sf = QFormLayout(serial_box)
         self.port = QComboBox()
         self.port.setEditable(True)
-        self.port.addItems(_serial_ports())
+        self.port.setMinimumContentsLength(24)
+        self.port.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        for path, description in serial_ports():
+            self.port.addItem(path)
+            self.port.setItemData(self.port.count() - 1, description, Qt.ItemDataRole.ToolTipRole)
         self.port.setCurrentText(s.port)
         self.baud = QComboBox()
         self.baud.setEditable(True)

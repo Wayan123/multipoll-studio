@@ -35,6 +35,38 @@ pip install -e '.[gui,test]'     # + test dependencies
 
 Requires Python ≥ 3.10. The core and the CLI need only `pyserial`.
 
+### Linux serial setup
+
+Plug in the USB-to-RS-485 adapter and run `multipoll-studio ports`. The output shows
+the adapter's connection path, description and USB ID when present. In the GUI,
+open **Connection Setup** (F3), choose **Serial**, then select the same path or
+enter one manually. Reopen the dialog after plugging in an adapter to refresh the list.
+
+When available, MultiPoll Studio prefers `/dev/serial/by-id/` over `/dev/serial/by-path/`,
+and uses the kernel device name (`/dev/ttyUSB*` or `/dev/ttyACM*`) otherwise.
+A `by-path` entry identifies the physical USB socket, so reconnect to that socket
+to reuse the setting. If using identical adapters without unique serial numbers,
+use the physical `by-path` entry to distinguish them; enter that path manually
+if the list shows a shared `by-id` name.
+
+If Linux reports permission denied, check the selected port's group (for example,
+`ls -lL /dev/ttyUSB0`).
+On distributions using `dialout`, run `sudo usermod -aG dialout "$USER"`, then sign
+out and back in. Use the device's actual group if different. Do not run the app as root.
+
+For an auto-direction adapter, leave **RTS Toggle** and hardware flow control off.
+For example, read two holding registers (FC03) from a test device at unit 1,
+address 0, using 9600 baud and 8E1.
+In the GUI, set those serial parameters in **Connection Setup** and the unit,
+function, address and quantity in **Poll Setup** (F8).
+
+For the same read on the command line:
+
+```sh
+port=/dev/ttyUSB0  # Replace with the adapter path printed by `multipoll-studio ports`.
+multipoll-studio read --rtu "$port" -b 9600 --parity E -s 1 -f 3 -a 0 -n 2 --format unsigned --trace
+```
+
 ## Usage
 
 ```sh

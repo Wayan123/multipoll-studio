@@ -18,7 +18,7 @@ from .formats import DisplayFormat, decode, encode, format_value, parse_coil, pa
 from .model import address_label
 from .protocol import ModbusError
 from .support import traffic_line
-from .transport import ConnectionKind, ConnectionSettings, ModbusMaster, SerialMode
+from .transport import ConnectionKind, ConnectionSettings, ModbusMaster, SerialMode, serial_ports
 
 
 def _connection_args(p: argparse.ArgumentParser) -> None:
@@ -119,7 +119,7 @@ def cmd_write(a, master: ModbusMaster) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    if not argv or argv[0] not in ("read", "poll", "write", "-h", "--help", "--version"):
+    if not argv or argv[0] not in ("read", "poll", "write", "ports", "-h", "--help", "--version"):
         from .gui.mainwindow import run
 
         return run([sys.argv[0], *argv])
@@ -127,6 +127,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="multipoll-studio", description="Open-source Modbus master test tool")
     parser.add_argument("--version", action="version", version=f"multipoll-studio {__version__}")
     sub = parser.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("ports", help="list serial ports without opening them")
     fmt_choices = [f.value for f in DisplayFormat]
 
     for name, helptext in (("read", "read once"), ("poll", "read repeatedly")):
@@ -149,6 +150,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--format", choices=fmt_choices, default="signed")
 
     a = parser.parse_args(argv)
+    if a.cmd == "ports":
+        for path, description in serial_ports():
+            print(f"{path}\t{description}")
+        return 0
+
     seq = [0]
 
     def trace(direction: str, data: bytes) -> None:
