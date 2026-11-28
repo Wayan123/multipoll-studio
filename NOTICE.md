@@ -22,6 +22,12 @@ The profiles in `openpoll-win/profiles/*.json` list sources for register maps an
 marked `"status": "partial"` or settings marked `"verified": false` include facts not confirmed in a
 manufacturer-hosted document. Check the actual device manual before writing settings. Manuals are not redistributed.
 
+## Android USB driver
+
+The Android edition uses [usb-serial-for-android 3.12.0](https://github.com/mik3y/usb-serial-for-android/tree/3.12.0)
+under the MIT license; its copyright notice is bundled in the APK under `assets/licenses/`.
+Reference SHA-256 of the JitPack AAR: `61221d698f71d2e4ac182e7b55ffeee17a01426ebb92e6e3c407b7c6df90f279`.
+
 ## No warranty
 
 MultiPoll Studio can write to industrial devices. It is provided without warranty (GPL-3.0 §15–16). Use write protection on
