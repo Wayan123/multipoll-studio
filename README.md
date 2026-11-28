@@ -9,6 +9,7 @@ Open-source Modbus master for testing and commissioning RS-485 / Modbus TCP devi
 |---|---|
 | `openpoll-win/` | Native Windows edition: one ~350 KiB EXE (C# WinForms, .NET Framework 4.8 built into Windows 10/11), no installer. Most features. |
 | `openpoll/` | Cross-platform Python edition (PySide6 GUI + `multipoll-studio` CLI). Fewer features (see its README). |
+| [`android/`](android/README.md) | Android field edition: native touch interface for Modbus RTU over USB OTG. Experimental; hardware qualification pending. |
 | `re/` | `REPORT.md` and `tools/`: notes from a static study of a commercial Modbus master, used as a behaviour reference. The studied files themselves are not part of this repository. |
 | `outputs/` | Research briefs that chose the roadmap (sources cited inside). |
 
